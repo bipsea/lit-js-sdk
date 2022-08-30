@@ -14,7 +14,8 @@
     "buildWeb": "node esbuild-web.js",
     "buildNode": "node esbuild-nodejs.js",
     "test": "node --experimental-specifier-resolution=node tests/provisioningAndSigning.js",
-    "versionBump": "node node_modules/semver-bump/index.js ../../package.json; npx genversion -e src/version.js"
+    "versionBump": "node node_modules/semver-bump/index.js ../../package.json; npx genversion -e src/version.js",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -45,12 +46,10 @@
     "@ethersproject/strings": "^5.5.0",
     "@ethersproject/units": "^5.4.0",
     "@ethersproject/wallet": "^5.2.0",
-    "@walletconnect/ethereum-provider": "^1.7.8",
     "buffer": "^6.0.3",
     "bufferutil": "^4.0.6",
     "cross-blob": "^3.0.1",
     "jszip": "^3.6.0",
-    "lit-connect-modal": "^0.1.8",
     "lit-siwe": "^1.1.8",
     "node-fetch": "^3.2.3",
     "pako": "^2.0.4",

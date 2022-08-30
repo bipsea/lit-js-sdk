@@ -1,3 +1,4 @@
+import {ethers} from "ethers";
 import { Contract } from "@ethersproject/contracts";
 import { verifyMessage } from "@ethersproject/wallet";
 import {
@@ -8,8 +9,8 @@ import {
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { hexlify } from "@ethersproject/bytes";
 import { getAddress } from "@ethersproject/address";
-import WalletConnectProvider from "@walletconnect/ethereum-provider";
-import LitConnectModal from "lit-connect-modal";
+// import WalletConnectProvider from "@walletconnect/ethereum-provider";
+// import LitConnectModal from "lit-connect-modal";
 import { SiweMessage } from "lit-siwe";
 
 import naclUtil from "tweetnacl-util";
@@ -43,7 +44,7 @@ export function decodeCallResult({ abi, functionName, data }) {
 }
 
 export async function connectWeb3({ chainId = 1 } = {}) {
-  const rpcUrls = {};
+  // const rpcUrls = {};
   // need to make it look like this:
   // rpc: {
   //   1: "https://mainnet.mycustomnode.com",
@@ -52,48 +53,50 @@ export async function connectWeb3({ chainId = 1 } = {}) {
   //   // ...
   // },
 
-  for (let i = 0; i < Object.keys(LIT_CHAINS).length; i++) {
-    const chainName = Object.keys(LIT_CHAINS)[i];
-    const chainId = LIT_CHAINS[chainName].chainId;
-    const rpcUrl = LIT_CHAINS[chainName].rpcUrls[0];
-    rpcUrls[chainId] = rpcUrl;
-  }
+  // for (let i = 0; i < Object.keys(LIT_CHAINS).length; i++) {
+  //   const chainName = Object.keys(LIT_CHAINS)[i];
+  //   const chainId = LIT_CHAINS[chainName].chainId;
+  //   const rpcUrl = LIT_CHAINS[chainName].rpcUrls[0];
+  //   rpcUrls[chainId] = rpcUrl;
+  // }
 
-  const providerOptions = {
-    walletconnect: {
-      package: WalletConnectProvider, // required
-      options: {
-        // infuraId: "cd614bfa5c2f4703b7ab0ec0547d9f81",
-        rpc: rpcUrls,
-        chainId,
-      },
-    },
-  };
+  // const providerOptions = {
+    // walletconnect: {
+    //   package: WalletConnectProvider, // required
+    //   options: {
+    //     // infuraId: "cd614bfa5c2f4703b7ab0ec0547d9f81",
+    //     rpc: rpcUrls,
+    //     chainId,
+    //   },
+    // },
+  // };
 
-  log("getting provider via lit connect modal");
+  // log("getting provider via lit connect modal");
 
-  const dialog = new LitConnectModal({
-    providerOptions,
-  });
-  const provider = await dialog.getWalletProvider();
+  // const dialog = new LitConnectModal({
+  //   providerOptions,
+  // });
+  // const provider = await dialog.getWalletProvider();
 
-  log("got provider", provider);
-  const web3 = new Web3Provider(provider);
+  // log("got provider", provider);
+  // const web3 = window.ethereum
 
   // const provider = await detectEthereumProvider();
   // const web3 = new Web3Provider(provider);
 
   // trigger metamask popup
-  await provider.enable();
+  // await provider.enable();
 
   log("listing accounts");
-  const accounts = await web3.listAccounts();
-  // const accounts = await provider.request({
-  //   method: "eth_requestAccounts",
-  //   params: [],
-  // });
+  // const accounts = await web3.listAccounts();
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+    params: [],
+  });
   log("accounts", accounts);
   const account = accounts[0].toLowerCase();
+
+  const web3 = new Web3Provider(window.ethereum, 'any');
 
   return { web3, account };
 }
@@ -193,7 +196,7 @@ export async function checkAndSignEVMAuthMessage({
     selectedChain
   );
   if (chainId !== selectedChain.chainId && switchChain) {
-    if (web3.provider instanceof WalletConnectProvider) {
+    if (web3.provider) {
       // this chain switching won't work.  alert the user that they need to switch chains manually
       throwError({
         message: `Incorrect network selected.  Please switch to the ${chain} network in your wallet and try again.`,
